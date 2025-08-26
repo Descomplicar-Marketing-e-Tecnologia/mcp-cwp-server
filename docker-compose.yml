@@ -1,18 +1,81 @@
+version: '3.8'
+
 services:
-  mcp-cwp:
-    image: node:20-alpine
-    container_name: mcp-cwp
-    working_dir: /app
-    volumes:
-      - ./server-persistent.js:/app/server.js
-    ports:
-      - "3014:3014"
+  # Development service
+  mcp-cwp-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: tester
+    container_name: mcp-cwp-dev
     environment:
-      - NODE_ENV=production
-      - LOG_LEVEL=error
-      - MCP_MODE=true
-      - CWP_API_URL=https://server.descomplicar.pt
-      - CWP_API_KEY=9bASMfauHJm0zbpa8bKK6JElFTa0eXCOA4sf00FRMgKgJh8jLPP7JvlyRhLg1LAobKU4A1
-      - CWP_PORT=2304
-    command: ["node", "server.js"]
+      - CWP_API_URL=${CWP_API_URL:-https://server.descomplicar.pt}
+      - CWP_API_KEY=${CWP_API_KEY}
+      - CWP_SSL_VERIFY=${CWP_SSL_VERIFY:-false}
+      - NODE_ENV=development
+      - LOG_LEVEL=${LOG_LEVEL:-debug}
+      - MCP_MOCK_MODE=${MCP_MOCK_MODE:-false}
+    volumes:
+      - ./logs:/app/logs
+      - ./src:/app/src:ro
     restart: unless-stopped
+    command: ["npm", "run", "dev"]
+    profiles:
+      - dev
+
+  # Production service
+  mcp-cwp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: mcp-cwp-prod
+    environment:
+      - CWP_API_URL=${CWP_API_URL:-https://server.descomplicar.pt}
+      - CWP_API_KEY=${CWP_API_KEY}
+      - CWP_SSL_VERIFY=${CWP_SSL_VERIFY:-false}
+      - NODE_ENV=production
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - ENABLE_PERFORMANCE_MONITORING=${ENABLE_PERFORMANCE_MONITORING:-true}
+      - ENABLE_HEALTH_CHECKS=${ENABLE_HEALTH_CHECKS:-true}
+    volumes:
+      - mcp-logs:/app/logs
+      - mcp-cache:/app/cache
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('MCP CWP Server Health Check')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    profiles:
+      - prod
+
+  # Test runner service
+  mcp-cwp-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: tester
+    container_name: mcp-cwp-test
+    environment:
+      - NODE_ENV=test
+      - LOG_LEVEL=error
+    command: ["npm", "test"]
+    profiles:
+      - test
+
+volumes:
+  mcp-logs:
+    driver: local
+  mcp-cache:
+    driver: local
+
+networks:
+  default:
+    name: mcp-network

@@ -1,29 +1,87 @@
-node_modules
-npm-debug.log
-.env
-.env.local
-.env.*.local
-logs/
-*.log
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs (will be copied separately)
 dist/
-coverage/
-.nyc_output/
-.git
+dist-backup/
+dist.bak.*/
+
+# Development files
+.git/
 .gitignore
-.github
-.vscode
-.idea
+.env*
+!.env.example
+.nyc_output/
+coverage/
+
+# Documentation (except README)
+docs/
+examples/
+*.md
+!README.md
+
+# Test utilities and scripts
+test-utils/
+scripts/
+
+# IDE files
+.vscode/
+.idea/
 *.swp
 *.swo
 *~
+
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
-tests/
-jest.config.cjs
-tsconfig.json
+
+# Logs
+logs/
+*.log
+
+# Docker files
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# CI/CD
+.github/
+
+# Backup and misc files
+briefing.md
+PROJECT_SUMMARY.md
+ENTERPRISE.md
+V2.2_COMPLIANCE.md
+SETUP.md
+DOCUMENTATION.md
+API.md
+
+# Fix scripts
+fix-*.sh
+fix-*.js
+
+# Development test files
+index.js
+index.js.backup
+server-persistent.js
+simple-server.js
+test-*.js
+
+# ESLint old config (migrated to flat config)
 .eslintrc.cjs
 .prettierrc
-*.md
-LICENSE
-Dockerfile
-.dockerignore
+
+# Keep these for build process
+# tsconfig.json - needed for build
+# jest.config.cjs - needed for tests
+# tests/ - needed for test stage
+# src/ - needed for build
+# eslint.config.js - needed for linting

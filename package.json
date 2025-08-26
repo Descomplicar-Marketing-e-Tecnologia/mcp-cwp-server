@@ -1,15 +1,26 @@
 {
-  "name": "mcp-cwp",
+  "name": "@descomplicar/mcp-cwp-server",
   "version": "1.0.2",
-  "description": "CWP MCP Server",
+  "description": "Production-ready MCP Server for CentOS Web Panel (CWP) integration with TypeScript, Zod validation, and enterprise features",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "type": "module",
+  "bin": {
+    "mcp-cwp-server": "dist/index.js"
+  },
   "scripts": {
     "start": "node dist/index.js",
     "dev": "ts-node src/index.ts",
     "build": "tsc",
     "test": "jest",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "prepublishOnly": "npm run build && npm test",
+    "prepare": "npm run build",
+    "docker:build": "docker build -t mcp-cwp-server .",
+    "docker:run": "docker run --rm mcp-cwp-server",
+    "docker:dev": "docker-compose --profile dev up",
+    "docker:prod": "docker-compose --profile prod up",
+    "docker:test": "docker-compose --profile test up"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.3",
@@ -28,5 +39,49 @@
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "cwp",
+    "centos-web-panel",
+    "hosting",
+    "server-management",
+    "typescript",
+    "claude",
+    "ai-tools"
+  ],
+  "author": {
+    "name": "Descomplicar - Digital Acceleration Agency",
+    "email": "dev@descomplicar.pt",
+    "url": "https://descomplicar.pt"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/descomplicar/mcp-cwp-server#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/descomplicar/mcp-cwp-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/descomplicar/mcp-cwp-server/issues"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "examples/"
+  ],
+  "engines": {
+    "node": ">=18.18.0",
+    "npm": ">=8.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://github.com/sponsors/descomplicar"
   }
 }
