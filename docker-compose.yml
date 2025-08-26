@@ -1,0 +1,18 @@
+services:
+  mcp-cwp:
+    image: node:20-alpine
+    container_name: mcp-cwp
+    working_dir: /app
+    volumes:
+      - ./server-persistent.js:/app/server.js
+    ports:
+      - "3014:3014"
+    environment:
+      - NODE_ENV=production
+      - LOG_LEVEL=error
+      - MCP_MODE=true
+      - CWP_API_URL=https://server.descomplicar.pt
+      - CWP_API_KEY=9bASMfauHJm0zbpa8bKK6JElFTa0eXCOA4sf00FRMgKgJh8jLPP7JvlyRhLg1LAobKU4A1
+      - CWP_PORT=2304
+    command: ["node", "server.js"]
+    restart: unless-stopped
