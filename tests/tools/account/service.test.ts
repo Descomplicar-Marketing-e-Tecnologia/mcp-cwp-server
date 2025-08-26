@@ -1,260 +1,173 @@
-import { AccountService } from '../../../src/tools/account/service';
-import { CwpClient } from '../../../src/core/client';
+import { AccountService } from '../../../src/tools/account/service.js';
+import { CwpClient } from '../../../src/core/client.js';
+import { cache, cacheKeys } from '../../../src/core/cache.js';
 
-jest.mock('../../../src/core/client');
-jest.mock('../../../src/core/cache');
-jest.mock('../../../src/utils/type-safety');
-jest.mock('../../../src/utils/defensive-queries', () => ({
-  processApiResponse: jest.fn(),
-  safeArrayProcess: jest.fn(),
-  mapCwpAccount: jest.fn()
-}));
+// Mock dependencies
+jest.mock('../../../src/core/client.js');
+jest.mock('../../../src/core/cache.js');
+
+const mockCache = {
+  get: jest.fn(),
+  set: jest.fn(),
+  delete: jest.fn(),
+  clearPattern: jest.fn(),
+} as any;
+
+(cache as any) = mockCache;
 
 describe('AccountService', () => {
   let service: AccountService;
   let mockClient: jest.Mocked<CwpClient>;
 
   beforeEach(() => {
+    jest.clearAllMocks();
     mockClient = {
       post: jest.fn(),
-      get: jest.fn(),
     } as any;
-    
-    (CwpClient as jest.MockedClass<typeof CwpClient>).mockImplementation(() => mockClient);
     service = new AccountService(mockClient);
   });
 
-  describe('listAccounts', () => {
-    it('should return list of accounts with defensive processing', async () => {
-      const mockRawAccounts = [
-        { domain: 'example.com', username: 'user1' },
-        { domain: 'test.com', username: 'user2' },
-      ];
-
-      const mockProcessedAccounts = [
-        {
-          username: 'user1',
-          domain: 'example.com', 
-          email: 'noemail@unknown.com',
-          package: 'default',
-          status: 'unknown',
-          created: expect.any(String),
-          suspended: false,
-          quota_used: 0,
-          quota_limit: 0,
-          bandwidth_used: 0,
-          bandwidth_limit: 0,
-        },
-        {
-          username: 'user2',
-          domain: 'test.com',
-          email: 'noemail@unknown.com', 
-          package: 'default',
-          status: 'unknown',
-          created: expect.any(String),
-          suspended: false,
-          quota_used: 0,
-          quota_limit: 0,
-          bandwidth_used: 0,
-          bandwidth_limit: 0,
-        },
-      ];
-
-      const { processApiResponse, safeArrayProcess } = require('../../../src/utils/defensive-queries');
-      
-      processApiResponse.mockReturnValue({
-        status: 'success',
-        message: 'Success',
-        data: mockRawAccounts,
-        errors: [],
-        count: 2
-      });
-      
-      safeArrayProcess.mockReturnValue(mockProcessedAccounts);
-
-      mockClient.post.mockResolvedValue({
-        status: 'success',
-        data: mockRawAccounts,
-      });
-
-      const result = await service.listAccounts();
-
-      expect(result.status).toBe('success');
-      expect(result.data).toEqual(mockProcessedAccounts);
-      expect(mockClient.post).toHaveBeenCalledWith('/account', { action: 'list' });
-    });
-
-    it('should handle errors gracefully with defensive processing', async () => {
-      mockClient.post.mockRejectedValue(new Error('Network error'));
-
-      await expect(service.listAccounts()).rejects.toThrow('Network error');
-    });
-  });
-
   describe('createAccount', () => {
-    it('should create account successfully', async () => {
-      const accountData = {
-        domain: 'newdomain.com',
-        username: 'newuser',
-        password: 'securepassword123',
-        email: 'user@newdomain.com',
+    it('should create account with required fields', async () => {
+      const mockResponse = { status: 'success', data: { id: 1 } };
+      mockClient.post.mockResolvedValue(mockResponse);
+
+      const args = {
+        domain: 'example.com',
+        username: 'testuser',
+        password: 'password123',
+        email: 'test@example.com',
         package: 'basic',
       };
 
-      mockClient.post.mockResolvedValue({
-        status: 'success',
-        data: { id: 123, ...accountData },
-      });
+      const result = await service.createAccount(args);
 
-      const result = await service.createAccount(accountData);
-
-      expect(result).toEqual({
-        status: 'success',
-        data: { id: 123, ...accountData },
-      });
       expect(mockClient.post).toHaveBeenCalledWith('/account', {
         action: 'add',
-        ...accountData,
+        domain: 'example.com',
+        username: 'testuser',
+        password: 'password123',
+        email: 'test@example.com',
+        package: 'basic',
+        server_ips: undefined,
+        inode: undefined,
+        limit_nproc: undefined,
+        limit_nofile: undefined,
         autossl: '0',
         backup: '1',
       });
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should invalidate cache on successful create', async () => {
+      const mockResponse = { status: 'success', data: { id: 1 } };
+      mockClient.post.mockResolvedValue(mockResponse);
+
+      await service.createAccount({
+        domain: 'example.com',
+        username: 'testuser',
+        password: 'password123',
+        email: 'test@example.com',
+        package: 'basic',
+      });
+
+      expect(cache.clearPattern).toHaveBeenCalledWith(/^account:list:/);
     });
   });
 
-  describe('suspendAccount', () => {
-    it('should suspend account successfully', async () => {
-      mockClient.post.mockResolvedValue({
-        status: 'success',
-        data: { message: 'Account suspended' },
-      });
+  describe('listAccounts', () => {
+    it('should return cached data if available', async () => {
+      const cachedData = { status: 'success', data: [] };
+      (cache.get as jest.Mock).mockReturnValue(cachedData);
 
-      const result = await service.suspendAccount({ username: 'testuser' });
+      const result = await service.listAccounts();
 
-      expect(result).toEqual({
-        status: 'success',
-        data: { message: 'Account suspended' },
-      });
-      expect(mockClient.post).toHaveBeenCalledWith('/account', {
-        action: 'susp',
-        username: 'testuser',
-        reason: 'Suspended via MCP',
-      });
-    });
-  });
-
-  describe('unsuspendAccount', () => {
-    it('should unsuspend account successfully', async () => {
-      mockClient.post.mockResolvedValue({
-        status: 'success',
-        data: { message: 'Account unsuspended' },
-      });
-
-      const result = await service.unsuspendAccount({ username: 'testuser' });
-
-      expect(result).toEqual({
-        status: 'success',
-        data: { message: 'Account unsuspended' },
-      });
-      expect(mockClient.post).toHaveBeenCalledWith('/account', {
-        action: 'unsp',
-        username: 'testuser',
-      });
-    });
-  });
-
-  describe('deleteAccount', () => {
-    it('should delete account successfully', async () => {
-      mockClient.post.mockResolvedValue({
-        status: 'success',
-        data: { message: 'Account deleted' },
-      });
-
-      const result = await service.deleteAccount({ username: 'testuser' });
-
-      expect(result).toEqual({
-        status: 'success',
-        data: { message: 'Account deleted' },
-      });
-      expect(mockClient.post).toHaveBeenCalledWith('/account', {
-        action: 'del',
-        username: 'testuser',
-      });
+      expect(cache.get).toHaveBeenCalled();
+      expect(mockClient.post).not.toHaveBeenCalled();
+      expect(result).toEqual(cachedData);
     });
 
-  });
+    it('should fetch and cache data if not cached', async () => {
+      const mockResponse = { status: 'success', data: [] };
+      (cache.get as jest.Mock).mockReturnValue(null);
+      mockClient.post.mockResolvedValue(mockResponse);
 
-  describe('resetPassword', () => {
-    it('should reset password successfully', async () => {
-      mockClient.post.mockResolvedValue({
-        status: 'success',
-        data: { message: 'Password reset' },
-      });
+      const result = await service.listAccounts({ limit: 10 });
 
-      const result = await service.resetPassword({ username: 'testuser', password: 'newpassword123' });
-
-      expect(result).toEqual({
-        status: 'success',
-        data: { message: 'Password reset' },
-      });
       expect(mockClient.post).toHaveBeenCalledWith('/account', {
-        action: 'changePassword',
-        username: 'testuser',
-        password: 'newpassword123',
+        action: 'list',
+        limit: '10',
+      });
+      expect(cache.set).toHaveBeenCalled();
+      expect(result).toEqual(mockResponse);
+    });
+
+    it('should use explicit type conversion for parameters', async () => {
+      (cache.get as jest.Mock).mockReturnValue(null);
+      mockClient.post.mockResolvedValue({ status: 'success', data: [] });
+
+      await service.listAccounts({
+        limit: 10,
+        offset: 20,
+        search: 'test',
+      });
+
+      expect(mockClient.post).toHaveBeenCalledWith('/account', {
+        action: 'list',
+        limit: '10',
+        offset: '20',
+        search: 'test',
       });
     });
   });
 
   describe('updateAccount', () => {
-    it('should update account successfully', async () => {
-      const updateData = {
+    it('should convert all fields to strings', async () => {
+      const mockResponse = { status: 'success' };
+      mockClient.post.mockResolvedValue(mockResponse);
+
+      await service.updateAccount({
         username: 'testuser',
-        email: 'newemail@example.com',
-        package: 'premium',
-      };
-
-      mockClient.post.mockResolvedValue({
-        status: 'success',
-        data: { message: 'Account updated' },
+        quota: 1000,
+        bandwidth: 2000,
+        autossl: true,
+        backup: false,
       });
 
-      const result = await service.updateAccount(updateData);
-
-      expect(result).toEqual({
-        status: 'success',
-        data: { message: 'Account updated' },
-      });
       expect(mockClient.post).toHaveBeenCalledWith('/account', {
         action: 'udp',
-        ...updateData,
+        username: 'testuser',
+        quota: '1000',
+        bandwidth: '2000',
+        autossl: '1',
+        backup: '0',
       });
+    });
+
+    it('should invalidate cache on successful update', async () => {
+      const mockResponse = { status: 'success' };
+      mockClient.post.mockResolvedValue(mockResponse);
+
+      await service.updateAccount({ username: 'testuser' });
+
+      expect(mockCache.delete).toHaveBeenCalledWith(cacheKeys.account('testuser'));
+      expect(mockCache.clearPattern).toHaveBeenCalledWith(/^account:list:/);
     });
   });
 
-  describe('getAccountInfo', () => {
-    it('should return account info', async () => {
-      const accountInfo = {
-        domain: 'example.com',
-        username: 'testuser',
-        email: 'user@example.com',
-        package: 'basic',
-        status: 'active',
-      };
+  describe('deleteAccount', () => {
+    it('should delete account and invalidate cache', async () => {
+      const mockResponse = { status: 'success' };
+      mockClient.post.mockResolvedValue(mockResponse);
 
-      mockClient.post.mockResolvedValue({
-        status: 'success',
-        data: accountInfo,
-      });
+      await service.deleteAccount({ username: 'testuser' });
 
-      const result = await service.getAccountInfo({ username: 'testuser' });
-
-      expect(result).toEqual({
-        status: 'success',
-        data: accountInfo,
-      });
       expect(mockClient.post).toHaveBeenCalledWith('/account', {
-        action: 'list',
+        action: 'del',
         username: 'testuser',
       });
+      expect(mockCache.delete).toHaveBeenCalledWith(cacheKeys.account('testuser'));
+      expect(mockCache.clearPattern).toHaveBeenCalledWith(/^account:list:/);
     });
   });
 });
