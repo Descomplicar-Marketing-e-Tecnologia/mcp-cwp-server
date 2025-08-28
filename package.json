@@ -1,12 +1,12 @@
 {
-  "name": "n8n-nodes-mcp-cwp",
-  "version": "1.0.0",
+  "name": "mcp-cwp-server",
+  "version": "1.0.1",
   "description": "Production-ready MCP Server for CentOS Web Panel (CWP) integration with TypeScript, Zod validation, and enterprise features",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "bin": {
-    "n8n-nodes-mcp-cwp": "./bin/mcp-cwp-server"
+    "mcp-cwp-server": "./bin/mcp-cwp-server"
   },
   "scripts": {
     "start": "node dist/index.js",
@@ -63,13 +63,13 @@
     "url": "https://github.com/cwp-community"
   },
   "license": "MIT",
-  "homepage": "https://github.com/YOUR_USERNAME/mcp-cwp-server#readme",
+  "homepage": "https://github.com/Descomplicar-Marketing-e-Tecnologia/mcp-cwp-server#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YOUR_USERNAME/mcp-cwp-server.git"
+    "url": "git+https://github.com/Descomplicar-Marketing-e-Tecnologia/mcp-cwp-server.git"
   },
   "bugs": {
-    "url": "https://github.com/YOUR_USERNAME/mcp-cwp-server/issues"
+    "url": "https://github.com/Descomplicar-Marketing-e-Tecnologia/mcp-cwp-server/issues"
   },
   "files": [
     "dist/",
@@ -89,6 +89,6 @@
   },
   "funding": {
     "type": "individual",
-    "url": "https://github.com/sponsors/YOUR_USERNAME"
+    "url": "https://github.com/sponsors/Descomplicar-Marketing-e-Tecnologia"
   }
 }
