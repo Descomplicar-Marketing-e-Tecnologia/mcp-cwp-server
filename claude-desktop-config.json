@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "cwp-server": {
+      "command": "node",
+      "args": ["/home/ealmeida/mcp-servers/mcp-cwp/dist/index.js"],
+      "env": {
+        "CWP_API_URL": "https://server.descomplicar.pt",
+        "CWP_API_KEY": "your-api-key-here",
+        "CWP_SSL_VERIFY": "false",
+        "NODE_ENV": "production",
+        "LOG_LEVEL": "info"
+      }
+    }
+  }
+}

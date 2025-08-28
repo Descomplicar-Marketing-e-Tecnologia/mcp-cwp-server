@@ -224,15 +224,16 @@ export class FeatureFlagManager {
       },
       {
         name: 'performance_monitoring',
-        enabled: true,
+        enabled: false, // DISABLED: Evita consumo excessivo de recursos
         description: 'Enable detailed performance metrics collection',
-        rollout_percentage: 90
+        rollout_percentage: 90,
+        value: { reportInterval: 600000 } // 10 min se ativado
       },
       {
         name: 'health_checks',
-        enabled: true,
+        enabled: false, // DISABLED: Evita consumo excessivo de recursos  
         description: 'Enable automatic health checks',
-        value: { interval: 30000, timeout: 5000 }
+        value: { interval: 120000, timeout: 5000 } // 2 min se ativado
       },
       {
         name: 'retry_optimization',

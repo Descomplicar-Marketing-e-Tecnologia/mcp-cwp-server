@@ -22,7 +22,7 @@ export class CwpClient {
   constructor(config: CwpConfig) {
     this.config = config;
     this.client = axios.create({
-      baseURL: `${config.apiUrl}:${config.port}/v1`,
+      baseURL: `${config.apiUrl}/v1`,
       timeout: 30000,
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
@@ -124,7 +124,7 @@ export class CwpClient {
    * @returns Always successful CWP response
    */
   async post<T = unknown>(endpoint: string, data: Record<string, unknown>, toolName?: string): Promise<CwpResponse<T>> {
-    const apiContext = logApiStart('POST', `${this.config.apiUrl}:${this.config.port}/v1${endpoint}`, data);
+    const apiContext = logApiStart('POST', `${this.config.apiUrl}/v1${endpoint}`, data);
     
     // Check if mock mode is enabled
     if (Mock.shouldUseMock()) {
@@ -182,7 +182,7 @@ export class CwpClient {
    * @returns Parsed CWP response
    */
   async get<T = unknown>(endpoint: string, params?: Record<string, unknown>): Promise<CwpResponse<T>> {
-    const apiContext = logApiStart('GET', `${this.config.apiUrl}:${this.config.port}/v1${endpoint}`, params);
+    const apiContext = logApiStart('GET', `${this.config.apiUrl}/v1${endpoint}`, params);
     
     return this.executeWithRetry(async () => {
       try {
