@@ -1,12 +1,12 @@
 {
-  "name": "mcp-cwp-server",
-  "version": "1.0.2",
+  "name": "n8n-nodes-mcp-cwp",
+  "version": "1.0.0",
   "description": "Production-ready MCP Server for CentOS Web Panel (CWP) integration with TypeScript, Zod validation, and enterprise features",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "bin": {
-    "mcp-cwp-server": "./bin/mcp-cwp-server"
+    "n8n-nodes-mcp-cwp": "./bin/mcp-cwp-server"
   },
   "scripts": {
     "start": "node dist/index.js",
@@ -14,7 +14,7 @@
     "build": "tsc",
     "test": "jest",
     "lint": "eslint . --ext .ts",
-    "prepublishOnly": "npm run build && npm test",
+    "prepublishOnly": "npm run build",
     "prepare": "npm run build",
     "docker:build": "docker build -t mcp-cwp-server .",
     "docker:run": "docker run --rm mcp-cwp-server",

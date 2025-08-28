@@ -65,7 +65,7 @@ A Model Context Protocol (MCP) server for CentOS Web Panel integration, built fo
 
 #### Option 1: NPM Installation (Recommended)
 ```bash
-npm install -g mcp-cwp-server
+npm install -g n8n-nodes-mcp-cwp
 ```
 
 #### Option 2: Local Installation
@@ -114,12 +114,12 @@ ENABLE_HEALTH_CHECKS=true npm start
 
 ### Installation in N8N
 ```bash
-# Install as N8N tool
-npm install -g mcp-cwp-server
+# Install as N8N node
+npm install -g n8n-nodes-mcp-cwp
 
 # Or use in N8N Docker
 FROM n8nio/n8n:latest
-RUN npm install -g mcp-cwp-server
+RUN npm install -g n8n-nodes-mcp-cwp
 ```
 
 ### N8N Workflow Example
@@ -128,7 +128,7 @@ RUN npm install -g mcp-cwp-server
   "nodes": [
     {
       "parameters": {
-        "command": "mcp-cwp-server",
+        "command": "n8n-nodes-mcp-cwp",
         "options": {
           "env": {
             "CWP_API_URL": "https://your-cwp-server.com",
