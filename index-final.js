@@ -21,7 +21,7 @@ import {
 
 // Manual config - no dotenv needed
 const getConfig = () => {
-  const baseUrl = process.env.CWP_BASE_URL || 'https://server.descomplicar.pt';
+  const baseUrl = process.env.CWP_BASE_URL || 'https://your-cwp-server.com';
   const port = process.env.CWP_PORT || '2304';
   
   return {

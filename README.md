@@ -62,8 +62,15 @@ A Model Context Protocol (MCP) server for CentOS Web Panel integration, built fo
 - CWP server with API access
 
 ### Installation
+
+#### Option 1: NPM Installation (Recommended)
 ```bash
-git clone https://github.com/descomplicar/mcp-cwp-server.git
+npm install -g mcp-cwp-server
+```
+
+#### Option 2: Local Installation
+```bash
+git clone https://github.com/YOUR_USERNAME/mcp-cwp-server.git
 cd mcp-cwp-server
 npm install
 npm run build
@@ -100,6 +107,51 @@ ENABLE_PERFORMANCE_MONITORING=true npm start
 # Health checks enabled
 ENABLE_HEALTH_CHECKS=true npm start
 ```
+
+## 🤖 **N8N Integration**
+
+**MCP CWP Server** is fully compatible with N8N for workflow automation:
+
+### Installation in N8N
+```bash
+# Install as N8N tool
+npm install -g mcp-cwp-server
+
+# Or use in N8N Docker
+FROM n8nio/n8n:latest
+RUN npm install -g mcp-cwp-server
+```
+
+### N8N Workflow Example
+```json
+{
+  "nodes": [
+    {
+      "parameters": {
+        "command": "mcp-cwp-server",
+        "options": {
+          "env": {
+            "CWP_API_URL": "https://your-cwp-server.com",
+            "CWP_API_KEY": "your_api_key",
+            "CWP_PORT": "2304",
+            "NODE_ENV": "production"
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.toolWorkflow",
+      "position": [250, 300],
+      "id": "cwp-server-tool"
+    }
+  ]
+}
+```
+
+### Available Tools for N8N Workflows
+- **Account Management**: Create, update, suspend accounts
+- **SSL Management**: Install, renew, delete SSL certificates  
+- **FTP Management**: Create, delete FTP accounts
+- **MySQL Management**: List databases
+- **Package Management**: List hosting packages
 
 ## 🔧 **Claude Desktop Integration**
 
@@ -276,15 +328,15 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 ## Credits
 
-Developed by **Descomplicar - Digital Acceleration Agency**
+Developed by **CWP Development Community**
 
 Following the **Official MCP Development Guide** methodology.
 
 ## Support
 
-- Documentation: [GitHub Wiki](https://github.com/descomplicar/mcp-cwp-server/wiki)
-- Issues: [GitHub Issues](https://github.com/descomplicar/mcp-cwp-server/issues)
-- Discussions: [GitHub Discussions](https://github.com/descomplicar/mcp-cwp-server/discussions)
+- Documentation: [GitHub Wiki](https://github.com/YOUR_USERNAME/mcp-cwp-server/wiki)
+- Issues: [GitHub Issues](https://github.com/YOUR_USERNAME/mcp-cwp-server/issues)
+- Discussions: [GitHub Discussions](https://github.com/YOUR_USERNAME/mcp-cwp-server/discussions)
 
 ---
 

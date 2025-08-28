@@ -1,12 +1,12 @@
 {
-  "name": "@descomplicar/mcp-cwp-server",
+  "name": "mcp-cwp-server",
   "version": "1.0.2",
   "description": "Production-ready MCP Server for CentOS Web Panel (CWP) integration with TypeScript, Zod validation, and enterprise features",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
   "bin": {
-    "mcp-cwp-server": "dist/index.js"
+    "mcp-cwp-server": "./bin/mcp-cwp-server"
   },
   "scripts": {
     "start": "node dist/index.js",
@@ -48,26 +48,32 @@
     "centos-web-panel",
     "hosting",
     "server-management",
+    "n8n",
+    "n8n-node",
+    "n8n-tool",
+    "automation",
+    "workflow",
     "typescript",
     "claude",
     "ai-tools"
   ],
   "author": {
-    "name": "Descomplicar - Digital Acceleration Agency",
-    "email": "dev@descomplicar.pt",
-    "url": "https://descomplicar.pt"
+    "name": "CWP Development Team",
+    "email": "dev@cwp-server.com",
+    "url": "https://github.com/cwp-community"
   },
   "license": "MIT",
-  "homepage": "https://github.com/descomplicar/mcp-cwp-server#readme",
+  "homepage": "https://github.com/YOUR_USERNAME/mcp-cwp-server#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/descomplicar/mcp-cwp-server.git"
+    "url": "git+https://github.com/YOUR_USERNAME/mcp-cwp-server.git"
   },
   "bugs": {
-    "url": "https://github.com/descomplicar/mcp-cwp-server/issues"
+    "url": "https://github.com/YOUR_USERNAME/mcp-cwp-server/issues"
   },
   "files": [
     "dist/",
+    "bin/",
     "README.md",
     "LICENSE",
     "CHANGELOG.md",
@@ -83,6 +89,6 @@
   },
   "funding": {
     "type": "individual",
-    "url": "https://github.com/sponsors/descomplicar"
+    "url": "https://github.com/sponsors/YOUR_USERNAME"
   }
 }

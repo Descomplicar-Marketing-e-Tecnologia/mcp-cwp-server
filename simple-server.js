@@ -65,7 +65,7 @@ rl.on('line', (line) => {
                 result = {
                     content: [{
                         type: 'text',
-                        text: '✅ CWP MCP Server está funcionando!\n🔗 URL: ' + (process.env.CWP_API_URL || 'https://server.descomplicar.pt') + '\n🔑 API Key: ' + (process.env.CWP_API_KEY ? 'Configurada' : 'Não configurada')
+                        text: '✅ CWP MCP Server está funcionando!\n🔗 URL: ' + (process.env.CWP_API_URL || 'https://your-cwp-server.com') + '\n🔑 API Key: ' + (process.env.CWP_API_KEY ? 'Configurada' : 'Não configurada')
                     }]
                 };
             } else if (toolName === 'cwp_info') {

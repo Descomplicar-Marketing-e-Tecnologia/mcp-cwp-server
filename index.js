@@ -26,8 +26,8 @@ class CwpMcpServer {
             }
         );
         
-        this.cwpApiUrl = process.env.CWP_API_URL || 'https://server.descomplicar.pt';
-        this.cwpApiKey = process.env.CWP_API_KEY || '9bASMfauHJm0zbpa8bKK6JElFTa0eXCOA4sf00FRMgKgJh8jLPP7JvlyRhLg1LAobKU4A1';
+        this.cwpApiUrl = process.env.CWP_API_URL || 'https://your-cwp-server.com';
+        this.cwpApiKey = process.env.CWP_API_KEY;
         this.cwpPort = process.env.CWP_PORT || '2304';
         this.cwpSslVerify = process.env.CWP_SSL_VERIFY !== 'false';
         
